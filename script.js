@@ -1,3 +1,4 @@
+const checkPositions = [[0, 1, 2], [3, 4, 5], [6, 7, 8], [0, 3, 6], [1, 4, 7], [2, 5, 8], [0, 4, 8], [2, 4, 6]];
 var names = new String(); // player1 plays with x and player2 plays with 0
 var whoTurn = 1, nrMarkedCells = 0;
 
@@ -39,19 +40,20 @@ function markCell(whichCell) {
     checkGameStatus();
 }
 
-function checkGameStatus() {
-    var whoWon = -1;
-    for (let i = 0; i < 9; i += 3) {
-        if ($('#cell' + i).text() === $('#cell' + (i + 1)).text() && $('#cell' + i).text() === $('#cell' + (i + 2)).text())
-            whoWon = i;
-        if ($('#cell' + i / 3).text() === $('#cell' + (i / 3 + 3)).text() && $('#cell' + i / 3).text() === $('#cell' + (i / 3 + 6)).text())
-            whoWon = i / 3;
-    }
-    if (($('#cell0').text() === $('#cell4').text() && $('#cell0').text() === $('#cell8').text()) || ($('#cell2').text() === $('#cell4').text() && $('#cell2').text() === $('#cell6').text()))
-        whoWon = 4;
+function cellText(line, column) {
+    return $('#cell' + checkPositions[line][column]).text();
+}
 
-    if (whoWon >= 0 && $('#cell' + whoWon).text() !== '') {
-        $('#messagesForPlayers').text(names[2 - ($('#cell' + whoWon).text() === 'X')] + ' has won!');
+function checkGameStatus() {
+    let whoWon = 0;
+    for (let i = 0; i < checkPositions.length; i++) {
+        let currentCell = cellText(i, 0);
+        if (currentCell !== '' && currentCell === cellText(i, 1) && currentCell === cellText(i, 2))
+            whoWon = 2 - (currentCell === 'X');
+    }
+
+    if (whoWon != 0) {
+        $('#messagesForPlayers').text(names[whoWon] + ' has won!');
         $('#informationSpace').append('<button type="button" class="btn btn-info rounded-pill px-3" onclick="replay();">Play Again!</button>');
         invalidCells();
     }
