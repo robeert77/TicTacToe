@@ -36,22 +36,22 @@ function markCell(whichCell) {
     whoTurn = 3 - whoTurn;
     nrMarkedCells++;
     $('#messagesForPlayers').text(names[whoTurn] + '\'s turn.');
-    checkGameStatus( whichCell - whichCell % 3, whichCell % 3);
+    checkGameStatus();
 }
 
-function checkGameStatus(line, column) {
-    var whoWon = 0;
-    if ($('#cell' + line).text() === $('#cell' + (line + 1)).text() && $('#cell' + line).text() === $('#cell' + (line + 2)).text()) // check for line winning
-        whoWon = 2 - ($('#cell' + line).text() === 'X');
-    if ($('#cell' + column).text() === $('#cell' + (column + 3)).text() && $('#cell' + column).text() === $('#cell' + (column + 6)).text()) // check for column winning
-        whoWon = 2 - ($('#cell' + column).text() === 'X');
-    if ($('#cell0').text() !== '' && $('#cell0').text() === $('#cell4').text() && $('#cell0').text() === $('#cell8').text()) // check for main diagonal winning
-        whoWon = 2 - ($('#cell0').text() === 'X');
-    if ($('#cell2').text() !== '' && $('#cell2').text() === $('#cell4').text() && $('#cell2').text() === $('#cell6').text()) // check for secondary diagonal winning
-        whoWon = 2 - ($('#cell2').text() === 'X');
+function checkGameStatus() {
+    var whoWon = -1;
+    for (let i = 0; i < 9; i += 3) {
+        if ($('#cell' + i).text() === $('#cell' + (i + 1)).text() && $('#cell' + i).text() === $('#cell' + (i + 2)).text())
+            whoWon = i;
+        if ($('#cell' + i / 3).text() === $('#cell' + (i / 3 + 3)).text() && $('#cell' + i / 3).text() === $('#cell' + (i / 3 + 6)).text())
+            whoWon = i / 3;
+    }
+    if (($('#cell0').text() === $('#cell4').text() && $('#cell0').text() === $('#cell8').text()) || ($('#cell2').text() === $('#cell4').text() && $('#cell2').text() === $('#cell6').text()))
+        whoWon = 4;
 
-    if (whoWon) {
-        $('#messagesForPlayers').text(names[whoWon] + ' has won!');
+    if (whoWon >= 0 && $('#cell' + whoWon).text() !== '') {
+        $('#messagesForPlayers').text(names[2 - ($('#cell' + whoWon).text() === 'X')] + ' has won!');
         $('#informationSpace').append('<button type="button" class="btn btn-info rounded-pill px-3" onclick="replay();">Play Again!</button>');
         invalidCells();
     }
